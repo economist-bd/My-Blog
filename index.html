@@ -6,16 +6,14 @@
     <title>MyGP Blog App</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#10B981">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f3f4f6; user-select: none; }
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f3f4f6; user-select: none; -webkit-tap-highlight-color: transparent; }
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-        .glass-effect { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid #10B981; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -28,17 +26,13 @@
             <i class="fa-solid fa-seedling text-3xl text-emerald-600"></i>
         </div>
         <h2 class="text-2xl font-bold text-gray-800 mb-1">স্বাগতম</h2>
-        <p class="text-gray-500 text-sm mb-6">ব্লগিং অ্যাপে যুক্ত হতে সাইন ইন করুন</p>
-
+        <p class="text-gray-500 text-sm mb-6">সাইন ইন করুন</p>
         <form id="authForm" class="space-y-4">
-            <input type="email" id="emailInput" placeholder="ইমেইল (eco452@gmail.com)" class="w-full p-3 bg-gray-50 border rounded-lg focus:outline-emerald-500" required>
+            <input type="email" id="emailInput" placeholder="ইমেইল" class="w-full p-3 bg-gray-50 border rounded-lg focus:outline-emerald-500" required>
             <input type="password" id="passInput" placeholder="পাসওয়ার্ড" class="w-full p-3 bg-gray-50 border rounded-lg focus:outline-emerald-500" required>
-            <button type="submit" id="authBtn" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold shadow-lg hover:bg-emerald-700 transition">লগ ইন</button>
+            <button type="submit" id="authBtn" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold shadow-lg">লগ ইন</button>
         </form>
-        
-        <p class="mt-4 text-sm text-gray-600">
-            অ্যাকাউন্ট নেই? <span id="toggleAuth" class="text-emerald-600 font-bold cursor-pointer">নিবন্ধন করুন</span>
-        </p>
+        <p class="mt-4 text-sm text-gray-600 cursor-pointer" id="toggleAuth">অ্যাকাউন্ট নেই? <span class="text-emerald-600 font-bold">নিবন্ধন করুন</span></p>
     </div>
 </div>
 
@@ -62,38 +56,28 @@
         
         <div class="relative group">
             <input type="text" placeholder="কী খুঁজছেন?" class="w-full bg-gray-100 p-3 rounded-full pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-all">
-            <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-400 group-focus-within:text-emerald-500"></i>
+            <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-400"></i>
         </div>
 
         <div>
-            <div class="flex justify-between items-end mb-3">
-                <h2 class="font-bold text-gray-700">ফিচারড</h2>
-            </div>
             <div id="sliderContainer" class="flex gap-3 overflow-x-auto hide-scroll snap-x scroll-pl-4">
                 <div class="w-full h-40 flex items-center justify-center bg-gray-100 rounded-xl animate-pulse">লোডিং...</div>
             </div>
         </div>
 
         <div>
-            <h2 class="font-bold text-gray-700 mb-3">কুইক সার্ভিস</h2>
-            <div id="quickLinkContainer" class="flex gap-4 overflow-x-auto hide-scroll pb-2">
-                </div>
+            <div id="quickLinkContainer" class="flex gap-4 overflow-x-auto hide-scroll pb-2"></div>
         </div>
 
         <div id="bannerContainer" class="rounded-xl overflow-hidden shadow-sm"></div>
 
         <div>
             <div class="flex justify-between items-center mb-3">
-                <h2 class="font-bold text-gray-700">সাম্প্রতিক পোস্ট</h2>
+                <h2 class="font-bold text-gray-700">ফটো গ্যালারি</h2>
                 <button onclick="switchTab('explore')" class="text-xs text-emerald-600 font-medium">সব দেখুন</button>
             </div>
-            <div id="recentPostsSlider" class="flex gap-3 overflow-x-auto hide-scroll snap-x">
+            <div id="homeGridContainer" class="grid grid-cols-2 gap-3">
                 </div>
-        </div>
-
-        <div>
-             <h2 class="font-bold text-gray-700 mb-3">ক্যাটাগরি ফিড</h2>
-             <div id="homeFeedContainer" class="grid grid-cols-1 gap-4"></div>
         </div>
     </div>
 
@@ -104,12 +88,11 @@
             <button class="px-4 py-1.5 bg-emerald-600 text-white rounded-full text-sm whitespace-nowrap">সব</button>
             <button class="px-4 py-1.5 bg-gray-200 text-gray-600 rounded-full text-sm whitespace-nowrap">টেক</button>
             <button class="px-4 py-1.5 bg-gray-200 text-gray-600 rounded-full text-sm whitespace-nowrap">লাইফস্টাইল</button>
-            <button class="px-4 py-1.5 bg-gray-200 text-gray-600 rounded-full text-sm whitespace-nowrap">খবর</button>
         </div>
 
         <div onclick="openCreateModal()" class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex items-center gap-3 mb-6 cursor-pointer">
             <div class="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden">
-                <img id="exploreUserImg" src="https://via.placeholder.com/50" class="w-full h-full object-cover">
+                <img id="exploreUserImg" src="https://via.placeholder.com/50" class="w-full h-full object-cover opacity-0">
             </div>
             <div class="flex-1 bg-gray-100 rounded-full h-10 flex items-center px-4 text-gray-400 text-sm">
                 আপনার মনের কথা লিখুন...
@@ -124,29 +107,22 @@
     <div id="adminView" class="view-section p-4 hidden">
         <h2 class="text-xl font-bold mb-4 text-emerald-700">এডমিন প্যানেল</h2>
         <div class="bg-orange-50 p-3 rounded border border-orange-200 text-xs text-orange-700 mb-4">
-            ⚠ আপনি এডমিন হিসেবে লগইন করেছেন। এখান থেকে অ্যাপের লেআউট কন্ট্রোল করা যাবে।
+            ⚠ আপনি এডমিন হিসেবে লগইন করেছেন।
         </div>
 
         <form id="adminPostForm" class="bg-white p-4 rounded-xl shadow-sm border space-y-3">
             <h3 class="font-bold text-gray-700">কন্টেন্ট আপলোড</h3>
-            
             <select id="adminPostType" class="w-full p-2 bg-gray-50 border rounded text-sm">
                 <option value="slider">টপ স্লাইডার (Top Carousel)</option>
                 <option value="quick">কুইক লিংক (Icon)</option>
                 <option value="banner">ফিক্সড ব্যানার</option>
-                <option value="poster">পোস্টার / কার্ড</option>
             </select>
-
-            <input type="text" id="adminPostTitle" placeholder="টাইটেল / শিরোনাম" class="w-full p-2 border rounded text-sm">
+            <input type="text" id="adminPostTitle" placeholder="টাইটেল (Optional)" class="w-full p-2 border rounded text-sm">
             <input type="url" id="adminPostLink" placeholder="লিংক (Optional)" class="w-full p-2 border rounded text-sm">
-            
             <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center relative">
                 <input type="file" id="adminFile" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="previewImage(this, 'adminPreview')">
-                <div id="adminPreview" class="text-gray-400 text-xs">
-                    <i class="fa-solid fa-cloud-upload-alt text-2xl mb-1"></i><br>ছবি আপলোড
-                </div>
+                <div id="adminPreview" class="text-gray-400 text-xs"><i class="fa-solid fa-cloud-upload-alt text-2xl mb-1"></i><br>ছবি আপলোড</div>
             </div>
-
             <button type="submit" id="adminSubmitBtn" class="w-full bg-gray-800 text-white py-2 rounded-lg text-sm font-bold">পাবলিশ করুন</button>
         </form>
     </div>
@@ -173,37 +149,27 @@
             <h3 class="font-bold">পোস্ট তৈরি করুন</h3>
             <button onclick="closeCreateModal()" class="w-8 h-8 bg-gray-100 rounded-full"><i class="fa-solid fa-times"></i></button>
         </div>
-        
         <textarea id="userPostText" class="w-full flex-1 p-2 focus:outline-none resize-none" placeholder="আপনার মনে কি আছে? লিখুন..."></textarea>
-        
         <div id="userImagePreviewContainer" class="h-32 bg-gray-100 rounded-lg mb-3 hidden relative overflow-hidden">
              <img id="userImagePreview" class="h-full w-full object-contain">
              <button onclick="removeUserImage()" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6"><i class="fa-solid fa-times text-xs"></i></button>
         </div>
-
         <div class="flex justify-between items-center pt-2">
             <label class="text-emerald-600 text-xl cursor-pointer p-2 bg-emerald-50 rounded-full">
                 <i class="fa-solid fa-image"></i>
                 <input type="file" id="userPostFile" accept="image/*" class="hidden" onchange="previewUserImage(this)">
             </label>
-            <select id="userPostCategory" class="text-xs border p-1 rounded bg-gray-50">
-                <option value="General">সাধারণ</option>
-                <option value="Tech">টেক</option>
-                <option value="News">খবর</option>
-            </select>
             <button onclick="submitUserPost()" id="userPostBtn" class="bg-emerald-600 text-white px-6 py-2 rounded-full font-bold text-sm">পোস্ট</button>
         </div>
     </div>
 </div>
 
 <script type="module">
-    // Import Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-    // Configuration
     const firebaseConfig = {
         apiKey: "AIzaSyBHFsTRQT1eopfz8NG5ux__0QKgKCnoXOE",
         authDomain: "support-94add.firebaseapp.com",
@@ -214,79 +180,54 @@
         measurementId: "G-57D00XB1NQ"
     };
 
-    // Initialize
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
     const storage = getStorage(app);
-
-    // Global State
     let currentUser = null;
     const adminEmail = "eco452@gmail.com";
 
-    // --- DOM ELEMENTS ---
-    const authScreen = document.getElementById('authScreen');
-    const appContainer = document.getElementById('appContainer');
-    const authForm = document.getElementById('authForm');
-    const authBtn = document.getElementById('authBtn');
-    
-    // --- AUTHENTICATION LOGIC ---
+    // --- AUTH LOGIC ---
     onAuthStateChanged(auth, (user) => {
         if (user) {
             currentUser = user;
-            authScreen.classList.add('hidden');
-            appContainer.classList.remove('hidden');
-            setupUI(user);
-            loadContent(); // Realtime Data Load
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('appContainer').classList.remove('hidden');
+            document.getElementById('userNameDisplay').innerText = user.displayName || user.email;
+            document.getElementById('userAvatar').innerText = (user.email[0]).toUpperCase();
+            if(user.email === adminEmail) document.getElementById('navAdmin').classList.remove('hidden');
+            loadContent();
         } else {
             currentUser = null;
-            authScreen.classList.remove('hidden');
-            appContainer.classList.add('hidden');
+            document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('appContainer').classList.add('hidden');
         }
     });
 
-    // Login / Signup Handler
     let isLogin = true;
     document.getElementById('toggleAuth').addEventListener('click', () => {
         isLogin = !isLogin;
-        document.getElementById('toggleAuth').innerText = isLogin ? "নিবন্ধন করুন" : "লগ ইন করুন";
-        authBtn.innerText = isLogin ? "লগ ইন" : "অ্যাকাউন্ট খুলুন";
+        document.getElementById('toggleAuth').innerHTML = isLogin ? 'অ্যাকাউন্ট নেই? <span class="text-emerald-600 font-bold">নিবন্ধন করুন</span>' : 'অ্যাকাউন্ট আছে? <span class="text-emerald-600 font-bold">লগ ইন করুন</span>';
+        document.getElementById('authBtn').innerText = isLogin ? "লগ ইন" : "অ্যাকাউন্ট খুলুন";
         document.querySelector('h2').innerText = isLogin ? "স্বাগতম" : "নতুন অ্যাকাউন্ট";
     });
 
-    authForm.addEventListener('submit', async (e) => {
+    document.getElementById('authForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('emailInput').value;
         const password = document.getElementById('passInput').value;
-        authBtn.innerHTML = '<div class="loader mx-auto"></div>';
-
+        document.getElementById('authBtn').innerText = "...";
         try {
-            if (isLogin) {
-                await signInWithEmailAndPassword(auth, email, password);
-            } else {
+            if (isLogin) await signInWithEmailAndPassword(auth, email, password);
+            else {
                 const cred = await createUserWithEmailAndPassword(auth, email, password);
-                // Set default display name (User part of email)
                 await updateProfile(cred.user, { displayName: email.split('@')[0] });
             }
-        } catch (error) {
-            alert("Error: " + error.message);
-            authBtn.innerText = isLogin ? "লগ ইন" : "অ্যাকাউন্ট খুলুন";
-        }
+        } catch (error) { alert(error.message); document.getElementById('authBtn').innerText = isLogin ? "লগ ইন" : "অ্যাকাউন্ট খুলুন"; }
     });
-
     window.logout = () => signOut(auth);
 
-    function setupUI(user) {
-        document.getElementById('userNameDisplay').innerText = user.displayName || user.email;
-        document.getElementById('userAvatar').innerText = (user.email[0]).toUpperCase();
-        
-        // Show Admin Tab if matched
-        if(user.email === adminEmail) {
-            document.getElementById('navAdmin').classList.remove('hidden');
-        }
-    }
-
-    // --- IMAGE COMPRESSION & UPLOAD HELPER ---
+    // --- COMPRESSION & UPLOAD ---
     async function compressAndUpload(file, path) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -296,16 +237,13 @@
                 img.src = event.target.result;
                 img.onload = async () => {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 800; // Resize logic
+                    const MAX_WIDTH = 800;
                     const scaleSize = MAX_WIDTH / img.width;
                     canvas.width = MAX_WIDTH;
                     canvas.height = img.height * scaleSize;
-                    
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7); // Compress to 70% quality
-                    
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
                     const storageRef = ref(storage, path + Date.now() + '.jpg');
                     await uploadString(storageRef, dataUrl, 'data_url');
                     const url = await getDownloadURL(storageRef);
@@ -315,88 +253,18 @@
         });
     }
 
-    // --- ADMIN POST LOGIC ---
-    document.getElementById('adminPostForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if(currentUser.email !== adminEmail) return alert("Only Admin!");
-
-        const btn = document.getElementById('adminSubmitBtn');
-        btn.innerText = "আপলোড হচ্ছে...";
-        
-        const type = document.getElementById('adminPostType').value;
-        const title = document.getElementById('adminPostTitle').value;
-        const link = document.getElementById('adminPostLink').value;
-        const file = document.getElementById('adminFile').files[0];
-
-        let imageUrl = '';
-        if(file) {
-            imageUrl = await compressAndUpload(file, 'admin/');
-        }
-
-        await addDoc(collection(db, "posts"), {
-            type, title, link, imageUrl,
-            timestamp: serverTimestamp(),
-            author: "Admin"
-        });
-
-        btn.innerText = "পাবলিশ করুন";
-        e.target.reset();
-        document.getElementById('adminPreview').innerHTML = '<i class="fa-solid fa-cloud-upload-alt text-2xl mb-1"></i><br>ছবি আপলোড';
-        alert("সফলভাবে পাবলিশ হয়েছে!");
-    });
-
-    // --- USER POST LOGIC ---
-    window.submitUserPost = async () => {
-        const text = document.getElementById('userPostText').value;
-        const file = document.getElementById('userPostFile').files[0];
-        const category = document.getElementById('userPostCategory').value;
-        const btn = document.getElementById('userPostBtn');
-
-        if(!text && !file) return alert("কিছু লিখুন বা ছবি দিন");
-
-        btn.innerText = "...";
-        
-        let imageUrl = '';
-        if(file) {
-            imageUrl = await compressAndUpload(file, 'users/');
-        }
-
-        await addDoc(collection(db, "posts"), {
-            type: 'user_blog',
-            text, imageUrl, category,
-            authorName: currentUser.displayName || "User",
-            authorId: currentUser.uid,
-            authorPhoto: null,
-            likes: [],
-            timestamp: serverTimestamp()
-        });
-
-        closeCreateModal();
-        btn.innerText = "পোস্ট";
-        document.getElementById('userPostText').value = "";
-        removeUserImage();
-        // Automatically go to explore to see the post
-        switchTab('explore');
-    };
-
-    // --- REALTIME DATA RENDERING ---
+    // --- CONTENT LOADING ---
     function loadContent() {
         const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
-        
         onSnapshot(q, (snapshot) => {
-            // Containers
             const sliderC = document.getElementById('sliderContainer');
             const quickC = document.getElementById('quickLinkContainer');
             const bannerC = document.getElementById('bannerContainer');
-            const recentC = document.getElementById('recentPostsSlider');
+            const homeGridC = document.getElementById('homeGridContainer');
             const feedC = document.getElementById('fullFeedContainer');
-            const homeFeedC = document.getElementById('homeFeedContainer');
 
-            // Clear
             sliderC.innerHTML = ''; quickC.innerHTML = ''; bannerC.innerHTML = ''; 
-            recentC.innerHTML = ''; feedC.innerHTML = ''; homeFeedC.innerHTML = '';
-
-            let homeFeedCount = 0;
+            homeGridC.innerHTML = ''; feedC.innerHTML = '';
 
             snapshot.forEach(doc => {
                 const data = doc.data();
@@ -407,39 +275,46 @@
                     sliderC.innerHTML += `
                         <div class="snap-center shrink-0 w-[90%] relative rounded-xl overflow-hidden shadow-md h-44 group">
                             <img src="${data.imageUrl}" class="w-full h-full object-cover">
-                            <div class="absolute bottom-0 left-0 bg-gradient-to-t from-black/80 to-transparent w-full p-4">
-                                <h3 class="text-white font-bold text-lg">${data.title}</h3>
-                            </div>
-                            ${data.link ? `<a href="${data.link}" target="_blank" class="absolute inset-0"></a>` : ''}
+                            ${data.link ? `<a href="${data.link}" target="_blank" class="absolute inset-0 z-10"></a>` : ''}
                         </div>`;
                 }
-
                 // 2. QUICK LINKS
                 else if(data.type === 'quick') {
                     quickC.innerHTML += `
                         <a href="${data.link || '#'}" class="flex flex-col items-center gap-1 min-w-[60px]">
                             <div class="w-14 h-14 rounded-full bg-white border border-gray-100 flex items-center justify-center shadow-sm overflow-hidden">
-                                ${data.imageUrl ? `<img src="${data.imageUrl}" class="w-full h-full object-cover">` : '<i class="fa-solid fa-star text-emerald-500"></i>'}
+                                ${data.imageUrl ? `<img src="${data.imageUrl}" class="w-full h-full object-cover">` : '<i class="fa-solid fa-star"></i>'}
                             </div>
-                            <span class="text-[10px] font-medium text-gray-600 truncate w-full text-center">${data.title}</span>
+                            <span class="text-[10px] font-medium text-gray-600 truncate w-full text-center">${data.title || 'Link'}</span>
                         </a>`;
                 }
-
-                // 3. FIXED BANNER (Only take the latest one)
+                // 3. FIXED BANNER
                 else if(data.type === 'banner' && bannerC.innerHTML === '') {
                     bannerC.innerHTML = `
                         <a href="${data.link || '#'}">
                             <img src="${data.imageUrl}" class="w-full h-auto object-cover border border-gray-100">
                         </a>`;
                 }
-
-                // 4. USER BLOGS & POSTERS
-                else if(data.type === 'user_blog' || data.type === 'poster') {
-                    // Create Card HTML
+                
+                // 4. USER POSTS & BLOGS
+                if(data.type === 'user_blog' || data.type === 'poster') {
                     const isUserPost = data.type === 'user_blog';
                     const hasLiked = data.likes && data.likes.includes(currentUser.uid);
-                    
-                    const cardHTML = `
+
+                    // A. HOME PAGE: GRID (Visual Only - No Text)
+                    if(data.imageUrl) {
+                        homeGridC.innerHTML += `
+                            <div onclick="switchTab('explore')" class="relative rounded-lg overflow-hidden shadow-sm h-40 border cursor-pointer group">
+                                <img src="${data.imageUrl}" class="w-full h-full object-cover group-hover:scale-105 transition">
+                                ${data.title ? `
+                                <div class="absolute bottom-0 left-0 w-full bg-black/50 p-2">
+                                    <p class="text-white text-[10px] font-bold truncate">${data.title}</p>
+                                </div>` : ''}
+                            </div>`;
+                    }
+
+                    // B. EXPLORE PAGE: FULL FEED (Text + Image + Interactions)
+                    feedC.innerHTML += `
                         <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                             <div class="flex items-center gap-2 mb-3">
                                 <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">
@@ -447,126 +322,88 @@
                                 </div>
                                 <div>
                                     <h4 class="font-bold text-sm text-gray-800">${isUserPost ? data.authorName : 'Admin'}</h4>
-                                    <p class="text-[10px] text-gray-400">${data.category || 'Update'}</p>
+                                    <p class="text-[10px] text-gray-400">Public Post</p>
                                 </div>
-                                ${!isUserPost ? '<i class="fa-solid fa-certificate text-emerald-500 ml-auto"></i>' : ''}
                             </div>
-                            
                             ${data.text ? `<p class="text-sm text-gray-700 mb-3 leading-relaxed">${data.text}</p>` : ''}
-                            ${data.title ? `<h3 class="font-bold text-gray-800 mb-2">${data.title}</h3>` : ''}
-                            
                             ${data.imageUrl ? `
                                 <div class="rounded-lg overflow-hidden mb-3 border border-gray-50">
                                     <img src="${data.imageUrl}" class="w-full h-auto max-h-80 object-cover">
                                 </div>` : ''}
-                            
                             <div class="flex items-center gap-4 border-t pt-3">
-                                <button onclick="toggleLike('${id}')" class="flex items-center gap-1 text-sm ${hasLiked ? 'text-red-500' : 'text-gray-500'}">
-                                    <i class="${hasLiked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
-                                    <span>${data.likes ? data.likes.length : 0}</span>
-                                </button>
                                 <button class="flex items-center gap-1 text-sm text-gray-500">
-                                    <i class="fa-regular fa-comment"></i>
-                                    <span>মন্তব্য</span>
+                                    <i class="fa-regular fa-heart"></i> <span>Like</span>
                                 </button>
                                 <button class="flex items-center gap-1 text-sm text-gray-500 ml-auto">
-                                    <i class="fa-solid fa-share"></i>
+                                    <i class="fa-solid fa-share"></i> Share
                                 </button>
                             </div>
                         </div>`;
-
-                    // Add to Feed
-                    feedC.innerHTML += cardHTML;
-
-                    // Add first 3 items to Home Feed
-                    if(homeFeedCount < 3) {
-                        homeFeedC.innerHTML += cardHTML;
-                        homeFeedCount++;
-                    }
-
-                    // Add to Recent Slider (if it has image)
-                    if(data.imageUrl) {
-                        recentC.innerHTML += `
-                            <div class="snap-start shrink-0 w-32 bg-white rounded-lg overflow-hidden border shadow-sm" onclick="switchTab('explore')">
-                                <img src="${data.imageUrl}" class="w-32 h-32 object-cover">
-                                <div class="p-2">
-                                    <p class="text-[10px] font-bold truncate">${data.title || data.text || 'New Post'}</p>
-                                </div>
-                            </div>`;
-                    }
                 }
             });
         });
     }
 
-    // --- INTERACTION LOGIC ---
-    window.toggleLike = async (docId) => {
-        if(!currentUser) return;
-        const postRef = doc(db, "posts", docId);
-        // Note: In a real app, check state before updating to avoid UI flicker, 
-        // but here we rely on onSnapshot to update UI.
-        // We need to check if user already liked.
-        // Since we don't have the doc data here instantly, we might just try arrayUnion/Remove blindly
-        // or improve logic. For simplicity, this is a basic toggle trigger.
-        // A better way is needed, but for single file simple logic:
-        // We assume the UI reflects current state.
-        // *Optimistic UI update is skipped for brevity*
+    // --- ADMIN POST ---
+    document.getElementById('adminPostForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('adminSubmitBtn'); btn.innerText = "...";
+        const file = document.getElementById('adminFile').files[0];
+        let imageUrl = '';
+        if(file) imageUrl = await compressAndUpload(file, 'admin/');
         
-        // This part requires reading the doc to know if we add or remove
-        // For this snippet, I will just do nothing to keep it crash-free 
-        // because proper toggling requires async checking.
-        alert("লাইক ফিচারটি ডেটাবেস অপ্টিমাইজেশনের জন্য এই ডেমো কোডে সীমিত।");
+        await addDoc(collection(db, "posts"), {
+            type: document.getElementById('adminPostType').value,
+            title: document.getElementById('adminPostTitle').value,
+            link: document.getElementById('adminPostLink').value,
+            imageUrl, timestamp: serverTimestamp()
+        });
+        btn.innerText = "পাবলিশ করুন"; e.target.reset(); alert("Uploaded!");
+    });
+
+    // --- USER POST ---
+    window.submitUserPost = async () => {
+        const text = document.getElementById('userPostText').value;
+        const file = document.getElementById('userPostFile').files[0];
+        const btn = document.getElementById('userPostBtn');
+        if(!text && !file) return alert("Empty post!");
+        btn.innerText = "...";
+        let imageUrl = '';
+        if(file) imageUrl = await compressAndUpload(file, 'users/');
+        
+        await addDoc(collection(db, "posts"), {
+            type: 'user_blog', text, imageUrl,
+            authorName: currentUser.displayName, authorId: currentUser.uid,
+            timestamp: serverTimestamp()
+        });
+        closeCreateModal(); btn.innerText = "পোস্ট"; switchTab('explore');
     };
 
     // --- UI HELPERS ---
     window.switchTab = (tab) => {
-        document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-        document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('text-emerald-600', 'text-gray-400'));
-        document.querySelectorAll('.nav-btn').forEach(el => el.classList.add('text-gray-400'));
-
-        if(tab === 'home') {
-            document.getElementById('homeView').classList.remove('hidden');
-            document.getElementById('navHome').classList.remove('text-gray-400');
-            document.getElementById('navHome').classList.add('text-emerald-600');
-        } else if(tab === 'explore') {
-            document.getElementById('exploreView').classList.remove('hidden');
-            document.getElementById('navExplore').classList.remove('text-gray-400');
-            document.getElementById('navExplore').classList.add('text-emerald-600');
-        } else if(tab === 'admin') {
-            document.getElementById('adminView').classList.remove('hidden');
-            document.getElementById('navAdmin').classList.remove('text-gray-400');
-            document.getElementById('navAdmin').classList.add('text-emerald-600');
-        }
+        ['home', 'explore', 'admin'].forEach(t => {
+            if(t === tab) {
+                document.getElementById(t+'View').classList.remove('hidden');
+                document.getElementById('nav'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('text-emerald-600');
+                document.getElementById('nav'+t.charAt(0).toUpperCase()+t.slice(1)).classList.remove('text-gray-400');
+            } else {
+                document.getElementById(t+'View').classList.add('hidden');
+                document.getElementById('nav'+t.charAt(0).toUpperCase()+t.slice(1)).classList.remove('text-emerald-600');
+                document.getElementById('nav'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('text-gray-400');
+            }
+        });
     };
-
-    // Modal & Preview
     window.openCreateModal = () => document.getElementById('createPostModal').classList.remove('hidden');
     window.closeCreateModal = () => document.getElementById('createPostModal').classList.add('hidden');
-    
-    window.previewImage = (input, targetId) => {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                document.getElementById(targetId).innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-lg">`;
-            }
-            reader.readAsDataURL(input.files[0]);
+    window.previewImage = (i,t) => { if(i.files[0]) document.getElementById(t).innerHTML = 'Selected'; };
+    window.previewUserImage = (i) => { 
+        if(i.files[0]) {
+            const r = new FileReader(); 
+            r.onload = (e) => { document.getElementById('userImagePreview').src = e.target.result; document.getElementById('userImagePreviewContainer').classList.remove('hidden'); };
+            r.readAsDataURL(i.files[0]); 
         }
-    }
-
-    window.previewUserImage = (input) => {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                document.getElementById('userImagePreviewContainer').classList.remove('hidden');
-                document.getElementById('userImagePreview').src = e.target.result;
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-    window.removeUserImage = () => {
-        document.getElementById('userPostFile').value = "";
-        document.getElementById('userImagePreviewContainer').classList.add('hidden');
-    }
+    };
+    window.removeUserImage = () => { document.getElementById('userPostFile').value = ""; document.getElementById('userImagePreviewContainer').classList.add('hidden'); };
 </script>
 </body>
 </html>
