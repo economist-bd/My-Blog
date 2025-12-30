@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MyGP Blog App</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10B981">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f3f4f6; user-select: none; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #10B981; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="text-gray-800">
+
+<div id="authScreen" class="fixed inset-0 z-50 bg-white flex flex-col justify-center items-center p-6 hidden">
+    <div class="w-full max-w-sm text-center">
+        <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fa-solid fa-seedling text-3xl text-emerald-600"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-1">স্বাগতম</h2>
+        <p class="text-gray-500 text-sm mb-6">ব্লগিং অ্যাপে যুক্ত হতে সাইন ইন করুন</p>
+        <form id="authForm" class="space-y-4">
+            <input type="email" id="emailInput" placeholder="ইমেইল" class="w-full p-3 bg-gray-50 border rounded-lg" required>
+            <input type="password" id="passInput" placeholder="পাসওয়ার্ড" class="w-full p-3 bg-gray-50 border rounded-lg" required>
+            <button type="submit" id="authBtn" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold">লগ ইন</button>
+        </form>
+        <p class="mt-4 text-sm text-gray-600">অ্যাকাউন্ট নেই? <span id="toggleAuth" class="text-emerald-600 font-bold cursor-pointer">নিবন্ধন করুন</span></p>
+    </div>
+</div>
+
+<div id="appContainer" class="max-w-md mx-auto bg-white min-h-screen pb-20 relative shadow-2xl hidden">
+    
+    <header class="bg-white p-4 sticky top-0 z-40 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-3">
+            <div id="userAvatar" class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold border-2 border-emerald-200">U</div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight text-emerald-700">আমার ব্লগ</h1>
+                <p id="userNameDisplay" class="text-[10px] text-gray-500">লোডিং...</p>
+            </div>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="logout()" class="text-gray-400 hover:text-red-500"><i class="fa-solid fa-power-off"></i></button>
+            <button class="text-gray-500 relative"><i class="fa-regular fa-bell"></i></button>
+        </div>
+    </header>
+
+    <div id="homeView" class="view-section p-4 space-y-6">
+        
+        <div class="relative group">
+            <input type="text" placeholder="কী খুঁজছেন?" class="w-full bg-gray-100 p-3 rounded-full pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400">
+            <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-400"></i>
+        </div>
+
+        <div>
+            <div id="sliderContainer" class="flex gap-3 overflow-x-auto hide-scroll snap-x scroll-pl-4"></div>
+        </div>
+
+        <div>
+            <div id="quickLinkContainer" class="flex gap-4 overflow-x-auto hide-scroll pb-2"></div>
+        </div>
+
+        <div id="bannerContainer" class="rounded-xl overflow-hidden shadow-sm"></div>
+
+        <div>
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="font-bold text-gray-700">সাম্প্রতিক হাইলাইট</h2>
+                <button onclick="switchTab('explore')" class="text-xs text-emerald-600 font-medium">সব দেখুন</button>
+            </div>
+            <div id="recentPostsSlider" class="flex gap-3 overflow-x-auto hide-scroll snap-x"></div>
+        </div>
+
+        <div>
+             <h2 class="font-bold text-gray-700 mb-3">জনপ্রিয় কালেকশন</h2>
+             <div id="homeGridContainer" class="grid grid-cols-2 gap-3">
+                 </div>
+        </div>
+    </div>
+
+    <div id="exploreView" class="view-section p-4 hidden">
+        <h2 class="text-xl font-bold mb-4 text-gray-800">এক্সপ্লোর ফিড</h2>
+        
+        <div onclick="openCreateModal()" class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex items-center gap-3 mb-6 cursor-pointer transform active:scale-95 transition">
+            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                <i class="fa-solid fa-pen text-gray-500"></i>
+            </div>
+            <div class="flex-1 bg-gray-100 rounded-full h-10 flex items-center px-4 text-gray-400 text-sm">
+                নতুন কিছু শেয়ার করুন...
+            </div>
+            <i class="fa-solid fa-image text-emerald-500 text-xl"></i>
+        </div>
+
+        <div id="fullFeedContainer" class="space-y-6 pb-20">
+            </div>
+    </div>
+
+    <div id="adminView" class="view-section p-4 hidden">
+        <h2 class="text-xl font-bold mb-4 text-emerald-700">এডমিন প্যানেল</h2>
+        <form id="adminPostForm" class="bg-white p-4 rounded-xl shadow-sm border space-y-3">
+            <h3 class="font-bold text-gray-700">কন্টেন্ট আপলোড</h3>
+            <select id="adminPostType" class="w-full p-2 bg-gray-50 border rounded text-sm">
+                <option value="slider">টপ স্লাইডার (Top Carousel)</option>
+                <option value="quick">কুইক লিংক (Icon)</option>
+                <option value="banner">ফিক্সড ব্যানার</option>
+                <option value="poster">ফটো কার্ড / পোস্টার</option>
+            </select>
+            <input type="text" id="adminPostTitle" placeholder="টাইটেল (Optional)" class="w-full p-2 border rounded text-sm">
+            <input type="url" id="adminPostLink" placeholder="লিংক (Optional)" class="w-full p-2 border rounded text-sm">
+            <input type="file" id="adminFile" accept="image/*" class="w-full text-sm">
+            <button type="submit" id="adminSubmitBtn" class="w-full bg-gray-800 text-white py-2 rounded-lg text-sm font-bold">পাবলিশ করুন</button>
+        </form>
+    </div>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around p-2 z-50 max-w-md mx-auto">
+        <button onclick="switchTab('home')" id="navHome" class="nav-btn flex flex-col items-center text-emerald-600 w-1/3">
+            <i class="fa-solid fa-house text-xl mb-1"></i><span class="text-[10px]">হোম</span>
+        </button>
+        <button onclick="switchTab('explore')" id="navExplore" class="nav-btn flex flex-col items-center text-gray-400 w-1/3">
+            <i class="fa-solid fa-compass text-xl mb-1"></i><span class="text-[10px]">এক্সপ্লোর</span>
+        </button>
+        <button onclick="switchTab('admin')" id="navAdmin" class="nav-btn flex flex-col items-center text-gray-400 w-1/3 hidden">
+            <i class="fa-solid fa-shield-halved text-xl mb-1"></i><span class="text-[10px]">এডমিন</span>
+        </button>
+    </nav>
+</div>
+
+<div id="createPostModal" class="fixed inset-0 z-[60] bg-black bg-opacity-50 hidden flex items-end sm:items-center justify-center">
+    <div class="bg-white w-full max-w-md p-4 rounded-t-2xl sm:rounded-2xl h-[80vh] flex flex-col">
+        <div class="flex justify-between items-center mb-4 border-b pb-2">
+            <h3 class="font-bold">পোস্ট তৈরি করুন</h3>
+            <button onclick="closeCreateModal()" class="w-8 h-8 bg-gray-100 rounded-full"><i class="fa-solid fa-times"></i></button>
+        </div>
+        <textarea id="userPostText" class="w-full flex-1 p-2 focus:outline-none resize-none" placeholder="আপনার মনে কি আছে? লিখুন..."></textarea>
+        <div id="userImagePreviewContainer" class="h-32 bg-gray-100 rounded-lg mb-3 hidden relative overflow-hidden">
+             <img id="userImagePreview" class="h-full w-full object-contain">
+        </div>
+        <div class="flex justify-between items-center pt-2">
+            <label class="text-emerald-600 text-xl cursor-pointer p-2 bg-emerald-50 rounded-full">
+                <i class="fa-solid fa-image"></i>
+                <input type="file" id="userPostFile" accept="image/*" class="hidden" onchange="previewUserImage(this)">
+            </label>
+            <button onclick="submitUserPost()" id="userPostBtn" class="bg-emerald-600 text-white px-6 py-2 rounded-full font-bold text-sm">পোস্ট</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBHFsTRQT1eopfz8NG5ux__0QKgKCnoXOE",
+        authDomain: "support-94add.firebaseapp.com",
+        projectId: "support-94add",
+        storageBucket: "support-94add.firebasestorage.app",
+        messagingSenderId: "442252148032",
+        appId: "1:442252148032:web:c6efbd2f182ba8e1368ea5",
+        measurementId: "G-57D00XB1NQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    let currentUser = null;
+    const adminEmail = "eco452@gmail.com";
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('appContainer').classList.remove('hidden');
+            setupUI(user);
+            loadContent();
+        } else {
+            currentUser = null;
+            document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('appContainer').classList.add('hidden');
+        }
+    });
+
+    // Auth Handlers (Login/Signup)
+    let isLogin = true;
+    document.getElementById('toggleAuth').addEventListener('click', () => {
+        isLogin = !isLogin;
+        document.getElementById('toggleAuth').innerText = isLogin ? "নিবন্ধন করুন" : "লগ ইন করুন";
+        document.getElementById('authBtn').innerText = isLogin ? "লগ ইন" : "অ্যাকাউন্ট খুলুন";
+        document.querySelector('#authScreen h2').innerText = isLogin ? "স্বাগতম" : "নতুন অ্যাকাউন্ট";
+    });
+
+    document.getElementById('authForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('emailInput').value;
+        const password = document.getElementById('passInput').value;
+        const btn = document.getElementById('authBtn');
+        btn.innerHTML = '<div class="loader mx-auto"></div>';
+
+        try {
+            if (isLogin) {
+                await signInWithEmailAndPassword(auth, email, password);
+            } else {
+                const cred = await createUserWithEmailAndPassword(auth, email, password);
+                await updateProfile(cred.user, { displayName: email.split('@')[0] });
+            }
+        } catch (error) {
+            alert(error.message);
+            btn.innerText = isLogin ? "লগ ইন" : "অ্যাকাউন্ট খুলুন";
+        }
+    });
+
+    window.logout = () => signOut(auth);
+
+    function setupUI(user) {
+        document.getElementById('userNameDisplay').innerText = user.displayName || user.email;
+        document.getElementById('userAvatar').innerText = (user.email[0]).toUpperCase();
+        if(user.email === adminEmail) document.getElementById('navAdmin').classList.remove('hidden');
+    }
+
+    // Image Compression
+    async function compressAndUpload(file, path) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = async () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800;
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    const storageRef = ref(storage, path + Date.now() + '.jpg');
+                    await uploadString(storageRef, dataUrl, 'data_url');
+                    resolve(await getDownloadURL(storageRef));
+                }
+            }
+        });
+    }
+
+    // Admin Post
+    document.getElementById('adminPostForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if(currentUser.email !== adminEmail) return alert("Only Admin!");
+        
+        const btn = document.getElementById('adminSubmitBtn');
+        btn.innerText = "আপলোড হচ্ছে...";
+        const type = document.getElementById('adminPostType').value;
+        const title = document.getElementById('adminPostTitle').value;
+        const link = document.getElementById('adminPostLink').value;
+        const file = document.getElementById('adminFile').files[0];
+        
+        let imageUrl = '';
+        if(file) imageUrl = await compressAndUpload(file, 'admin/');
+
+        await addDoc(collection(db, "posts"), {
+            type, title, link, imageUrl, timestamp: serverTimestamp(), author: "Admin"
+        });
+        btn.innerText = "পাবলিশ করুন";
+        e.target.reset();
+        alert("সফলভাবে পাবলিশ হয়েছে!");
+    });
+
+    // User Post
+    window.submitUserPost = async () => {
+        const text = document.getElementById('userPostText').value;
+        const file = document.getElementById('userPostFile').files[0];
+        const btn = document.getElementById('userPostBtn');
+        
+        if(!text && !file) return alert("কিছু লিখুন");
+        btn.innerText = "...";
+        
+        let imageUrl = '';
+        if(file) imageUrl = await compressAndUpload(file, 'users/');
+
+        await addDoc(collection(db, "posts"), {
+            type: 'user_blog', text, imageUrl, 
+            authorName: currentUser.displayName, authorId: currentUser.uid, 
+            likes: [], timestamp: serverTimestamp()
+        });
+
+        closeCreateModal();
+        btn.innerText = "পোস্ট";
+        document.getElementById('userPostText').value = "";
+        switchTab('explore');
+    };
+
+    // Load Data
+    function loadContent() {
+        const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+        onSnapshot(q, (snapshot) => {
+            // Containers
+            const sliderC = document.getElementById('sliderContainer');
+            const quickC = document.getElementById('quickLinkContainer');
+            const bannerC = document.getElementById('bannerContainer');
+            const recentC = document.getElementById('recentPostsSlider');
+            const homeGridC = document.getElementById('homeGridContainer');
+            const fullFeedC = document.getElementById('fullFeedContainer');
+
+            // Reset
+            sliderC.innerHTML = ''; quickC.innerHTML = ''; bannerC.innerHTML = '';
+            recentC.innerHTML = ''; homeGridC.innerHTML = ''; fullFeedC.innerHTML = '';
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const id = doc.id;
+                
+                // --- HOME PAGE VISUAL ELEMENTS ---
+
+                if(data.type === 'slider') {
+                    sliderC.innerHTML += `
+                        <div onclick="${data.link ? `window.location.href='${data.link}'` : `switchTab('explore')`}" class="snap-center shrink-0 w-[90%] relative rounded-xl overflow-hidden shadow-md h-44 group cursor-pointer">
+                            <img src="${data.imageUrl}" class="w-full h-full object-cover">
+                            ${data.title ? `<div class="absolute bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-4"><h3 class="text-white font-bold">${data.title}</h3></div>` : ''}
+                        </div>`;
+                }
+                else if(data.type === 'quick') {
+                    quickC.innerHTML += `
+                        <div onclick="${data.link ? `window.location.href='${data.link}'` : `switchTab('explore')`}" class="flex flex-col items-center gap-1 min-w-[60px] cursor-pointer">
+                            <div class="w-14 h-14 rounded-full border border-emerald-100 flex items-center justify-center shadow-sm overflow-hidden">
+                                ${data.imageUrl ? `<img src="${data.imageUrl}" class="w-full h-full object-cover">` : '<i class="fa-solid fa-bolt text-emerald-500"></i>'}
+                            </div>
+                            <span class="text-[10px] font-medium text-gray-600 truncate w-full text-center">${data.title || 'Link'}</span>
+                        </div>`;
+                }
+                else if(data.type === 'banner' && bannerC.innerHTML === '') {
+                    bannerC.innerHTML = `
+                        <div onclick="${data.link ? `window.location.href='${data.link}'` : `switchTab('explore')`}" class="cursor-pointer">
+                            <img src="${data.imageUrl}" class="w-full h-auto object-cover border border-gray-100">
+                        </div>`;
+                }
+
+                // --- HOME GRID & RECENT (IMAGES ONLY, NO TEXT) ---
+                // Only show in grid if it has an image
+                if (data.imageUrl && (data.type === 'user_blog' || data.type === 'poster')) {
+                    
+                    // Add to Horizontal Recent Slider
+                    recentC.innerHTML += `
+                        <div onclick="switchTab('explore')" class="snap-start shrink-0 w-32 h-32 bg-white rounded-lg overflow-hidden border shadow-sm relative cursor-pointer">
+                            <img src="${data.imageUrl}" class="w-full h-full object-cover">
+                        </div>`;
+
+                    // Add to Home Grid (Photo Card)
+                    homeGridC.innerHTML += `
+                        <div onclick="switchTab('explore')" class="bg-white rounded-xl overflow-hidden shadow-sm relative aspect-square group cursor-pointer border border-gray-100">
+                            <img src="${data.imageUrl}" class="w-full h-full object-cover transition duration-300 group-hover:scale-110">
+                            <div class="absolute bottom-0 w-full bg-gradient-to-t from-black/70 to-transparent p-2">
+                                <p class="text-white text-xs font-bold truncate">${data.title || data.authorName || 'Post'}</p>
+                            </div>
+                            <div class="absolute top-2 right-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full">
+                                <i class="fa-solid fa-image"></i>
+                            </div>
+                        </div>`;
+                }
+
+                // --- EXPLORE PAGE (FULL CONTENT) ---
+                if (data.type === 'user_blog' || data.type === 'poster') {
+                    fullFeedC.innerHTML += `
+                        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                            <div class="flex items-center gap-2 mb-3">
+                                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">
+                                    ${data.authorName ? data.authorName[0] : 'A'}
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-sm text-gray-800">${data.authorName || 'Admin'}</h4>
+                                    <p class="text-[10px] text-gray-400">Just now</p>
+                                </div>
+                            </div>
+                            ${data.text ? `<p class="text-sm text-gray-700 mb-3 leading-relaxed">${data.text}</p>` : ''}
+                            ${data.title ? `<h3 class="font-bold text-gray-800 mb-2">${data.title}</h3>` : ''}
+                            ${data.imageUrl ? `<div class="rounded-lg overflow-hidden mb-3"><img src="${data.imageUrl}" class="w-full h-auto max-h-96 object-cover"></div>` : ''}
+                            <div class="flex items-center gap-4 border-t pt-3 text-gray-500 text-sm">
+                                <button class="flex items-center gap-1 hover:text-red-500"><i class="fa-regular fa-heart"></i> ${data.likes ? data.likes.length : 0}</button>
+                                <button class="flex items-center gap-1"><i class="fa-regular fa-comment"></i> কমেন্ট</button>
+                                <button class="flex items-center gap-1 ml-auto"><i class="fa-solid fa-share"></i> শেয়ার</button>
+                            </div>
+                        </div>`;
+                }
+            });
+        });
+    }
+
+    // Tab Switching
+    window.switchTab = (tab) => {
+        ['homeView', 'exploreView', 'adminView'].forEach(id => document.getElementById(id).classList.add('hidden'));
+        ['navHome', 'navExplore', 'navAdmin'].forEach(id => {
+            const el = document.getElementById(id);
+            el.classList.remove('text-emerald-600');
+            el.classList.add('text-gray-400');
+        });
+
+        if(tab === 'home') {
+            document.getElementById('homeView').classList.remove('hidden');
+            document.getElementById('navHome').classList.add('text-emerald-600');
+            document.getElementById('navHome').classList.remove('text-gray-400');
+        } else if(tab === 'explore') {
+            document.getElementById('exploreView').classList.remove('hidden');
+            document.getElementById('navExplore').classList.add('text-emerald-600');
+            document.getElementById('navExplore').classList.remove('text-gray-400');
+        } else if(tab === 'admin') {
+            document.getElementById('adminView').classList.remove('hidden');
+            document.getElementById('navAdmin').classList.add('text-emerald-600');
+            document.getElementById('navAdmin').classList.remove('text-gray-400');
+        }
+        window.scrollTo(0,0);
+    };
+
+    window.openCreateModal = () => document.getElementById('createPostModal').classList.remove('hidden');
+    window.closeCreateModal = () => document.getElementById('createPostModal').classList.add('hidden');
+    
+    window.previewUserImage = (input) => {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('userImagePreviewContainer').classList.remove('hidden');
+                document.getElementById('userImagePreview').src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    };
+</script>
+</body>
+</html>
