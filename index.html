@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyGP Style Blog App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f3f4f6; }
+        
+        /* Hide Scrollbar for Horizontal Scroll */
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Mobile App Container */
+        .app-container { max-width: 480px; margin: 0 auto; background: white; min-height: 100vh; position: relative; padding-bottom: 80px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        
+        .active-nav { color: #10B981; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <header class="bg-white p-4 sticky top-0 z-50 shadow-sm flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold">M</div>
+            <div>
+                <h1 class="font-bold text-lg text-gray-800">আমার ব্লগ</h1>
+                <p class="text-xs text-gray-500">স্বাগতম!</p>
+            </div>
+        </div>
+        <button class="text-gray-500"><i class="fa-regular fa-bell"></i></button>
+    </header>
+
+    <main id="homePage" class="p-4 space-y-6 block">
+        
+        <div class="relative">
+            <input type="text" placeholder="কী খুঁজছেন?" class="w-full bg-gray-100 p-3 rounded-full pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400">
+            <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-400"></i>
+        </div>
+
+        <div>
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="font-bold text-gray-700">ফিচারড</h2>
+                <a href="#" class="text-emerald-500 text-xs">সব দেখুন</a>
+            </div>
+            <div id="sliderContainer" class="flex gap-4 overflow-x-auto hide-scroll snap-x">
+                </div>
+        </div>
+
+        <div>
+            <h2 class="font-bold text-gray-700 mb-3">কুইক লিংকস</h2>
+            <div id="flashCardContainer" class="grid grid-cols-4 gap-4 text-center">
+                </div>
+        </div>
+
+        <div id="bannerContainer" class="space-y-4">
+             </div>
+
+        <div>
+            <h2 class="font-bold text-gray-700 mb-3">সাম্প্রতিক পোস্ট</h2>
+            <div id="postsContainer" class="grid grid-cols-2 gap-3">
+                 </div>
+        </div>
+
+    </main>
+
+    <main id="adminPage" class="p-4 hidden">
+        <h2 class="text-xl font-bold mb-4 text-emerald-600">এডমিন প্যানেল</h2>
+        
+        <form id="postForm" class="space-y-4 bg-gray-50 p-4 rounded-lg border">
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700">পোস্টের ধরণ</label>
+                <select id="postType" class="w-full p-2 border rounded mt-1">
+                    <option value="slider">স্লাইড ক্যারোজাল (Top Slider)</option>
+                    <option value="flash">ফ্লাস কার্ড (Icon/Small)</option>
+                    <option value="banner">ফিক্সড ব্যানার (Wide)</option>
+                    <option value="post">ফটো কার্ড পোস্ট (Grid)</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">শিরোনাম / নাম</label>
+                <input type="text" id="postTitle" class="w-full p-2 border rounded mt-1" placeholder="টাইটেল লিখুন">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">ছবি আপলোড (লোকাল ফাইল)</label>
+                <input type="file" id="postImage" accept="image/*" class="w-full p-2 bg-white border rounded mt-1">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">লিংক (অপশনাল)</label>
+                <input type="url" id="postLink" class="w-full p-2 border rounded mt-1" placeholder="https://example.com">
+            </div>
+
+            <button type="submit" class="w-full bg-emerald-600 text-white py-2 rounded-lg font-bold hover:bg-emerald-700">পোস্ট করুন</button>
+        </form>
+
+        <div class="mt-8">
+            <h3 class="font-bold mb-2">ম্যানেজ কন্টেন্ট</h3>
+            <div id="adminList" class="space-y-2">
+                </div>
+            <button onclick="clearAllData()" class="mt-4 text-red-500 text-sm underline">সব ডাটা ডিলিট করুন (Reset)</button>
+        </div>
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around p-3 z-50" style="max-width: 480px; margin: 0 auto;">
+        <button onclick="switchTab('home')" id="navHome" class="flex flex-col items-center text-gray-400 active-nav">
+            <i class="fa-solid fa-house text-xl"></i>
+            <span class="text-[10px] mt-1">হোম</span>
+        </button>
+        <button class="flex flex-col items-center text-gray-400">
+            <i class="fa-solid fa-compass text-xl"></i>
+            <span class="text-[10px] mt-1">এক্সপ্লোর</span>
+        </button>
+        <button onclick="switchTab('admin')" id="navAdmin" class="flex flex-col items-center text-gray-400">
+            <i class="fa-solid fa-user-gear text-xl"></i>
+            <span class="text-[10px] mt-1">এডমিন</span>
+        </button>
+    </nav>
+
+</div>
+
+<script>
+    // --- Logic & Storage ---
+    
+    // Initialize Data from LocalStorage or use default demo data
+    let appData = JSON.parse(localStorage.getItem('myGpBlogData')) || [
+        { id: 1, type: 'slider', title: 'ঈদ অফার!', img: 'https://via.placeholder.com/600x300/10B981/ffffff?text=Offer+1', link: '#' },
+        { id: 2, type: 'slider', title: 'নতুন ব্লগ', img: 'https://via.placeholder.com/600x300/3B82F6/ffffff?text=Tech+News', link: '#' },
+        { id: 3, type: 'flash', title: 'অফার', img: 'https://via.placeholder.com/100/F59E0B/ffffff?text=%25', link: '#' },
+        { id: 4, type: 'flash', title: 'গেমস', img: 'https://via.placeholder.com/100/EC4899/ffffff?text=Game', link: '#' },
+        { id: 5, type: 'banner', title: 'GP স্টার স্ট্যাটাস চেক করুন', img: 'https://via.placeholder.com/600x150/6366F1/ffffff?text=Banner+Ad', link: '#' },
+        { id: 6, type: 'post', title: 'কিভাবে ইন্টারনেট সেভ করবেন?', img: 'https://via.placeholder.com/300x300/14B8A6/ffffff?text=Tips', link: '#' }
+    ];
+
+    // Function to Save Data
+    function saveData() {
+        localStorage.setItem('myGpBlogData', JSON.stringify(appData));
+        renderApp();
+        renderAdminList();
+    }
+
+    // Function to Switch Tabs
+    function switchTab(tab) {
+        document.getElementById('homePage').classList.add('hidden');
+        document.getElementById('adminPage').classList.add('hidden');
+        document.getElementById('navHome').classList.remove('active-nav');
+        document.getElementById('navAdmin').classList.remove('active-nav');
+
+        if(tab === 'home') {
+            document.getElementById('homePage').classList.remove('hidden');
+            document.getElementById('navHome').classList.add('active-nav');
+        } else {
+            document.getElementById('adminPage').classList.remove('hidden');
+            document.getElementById('navAdmin').classList.add('active-nav');
+            renderAdminList();
+        }
+    }
+
+    // Handle Image Upload (Convert to Base64)
+    const postForm = document.getElementById('postForm');
+    
+    postForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const type = document.getElementById('postType').value;
+        const title = document.getElementById('postTitle').value;
+        const link = document.getElementById('postLink').value || '#';
+        const fileInput = document.getElementById('postImage');
+        
+        if (fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgBase64 = e.target.result;
+                addToData(type, title, imgBase64, link);
+            }
+            reader.readAsDataURL(fileInput.files[0]);
+        } else {
+            // Use placeholder if no image uploaded
+            const placeholder = `https://via.placeholder.com/400x200?text=${title}`;
+            addToData(type, title, placeholder, link);
+        }
+    });
+
+    function addToData(type, title, img, link) {
+        const newItem = {
+            id: Date.now(),
+            type, title, img, link
+        };
+        appData.unshift(newItem); // Add to top
+        saveData();
+        postForm.reset();
+        alert('পোস্ট সফলভাবে যুক্ত হয়েছে!');
+        switchTab('home');
+    }
+
+    // Render the App (Home Page)
+    function renderApp() {
+        const sliderContainer = document.getElementById('sliderContainer');
+        const flashCardContainer = document.getElementById('flashCardContainer');
+        const bannerContainer = document.getElementById('bannerContainer');
+        const postsContainer = document.getElementById('postsContainer');
+
+        // Clear current content
+        sliderContainer.innerHTML = '';
+        flashCardContainer.innerHTML = '';
+        bannerContainer.innerHTML = '';
+        postsContainer.innerHTML = '';
+
+        appData.forEach(item => {
+            if (item.type === 'slider') {
+                sliderContainer.innerHTML += `
+                    <a href="${item.link}" class="snap-center shrink-0 w-[85%] relative rounded-xl overflow-hidden shadow-md">
+                        <img src="${item.img}" class="w-full h-40 object-cover">
+                        <div class="absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent w-full p-3 pt-10">
+                            <h3 class="text-white font-bold">${item.title}</h3>
+                        </div>
+                    </a>`;
+            } else if (item.type === 'flash') {
+                flashCardContainer.innerHTML += `
+                    <a href="${item.link}" class="flex flex-col items-center gap-1">
+                        <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-emerald-100 shadow-sm">
+                            <img src="${item.img}" class="w-full h-full object-cover">
+                        </div>
+                        <span class="text-xs font-medium text-gray-600">${item.title}</span>
+                    </a>`;
+            } else if (item.type === 'banner') {
+                bannerContainer.innerHTML += `
+                    <a href="${item.link}" class="block w-full rounded-lg overflow-hidden shadow-sm">
+                         <img src="${item.img}" class="w-full h-auto object-cover">
+                    </a>`;
+            } else if (item.type === 'post') {
+                postsContainer.innerHTML += `
+                    <a href="${item.link}" class="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 pb-2">
+                        <img src="${item.img}" class="w-full h-32 object-cover">
+                        <div class="p-2">
+                            <h3 class="text-sm font-bold text-gray-800 line-clamp-2">${item.title}</h3>
+                            <span class="text-[10px] text-gray-400 mt-1 block">Read More <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </a>`;
+            }
+        });
+    }
+
+    // Render Admin List (For deleting)
+    function renderAdminList() {
+        const list = document.getElementById('adminList');
+        list.innerHTML = '';
+        appData.forEach(item => {
+            list.innerHTML += `
+                <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm border">
+                    <div class="flex items-center gap-2">
+                        <img src="${item.img}" class="w-8 h-8 rounded object-cover">
+                        <div class="text-xs">
+                            <p class="font-bold">${item.title}</p>
+                            <p class="text-gray-500 uppercase">${item.type}</p>
+                        </div>
+                    </div>
+                    <button onclick="deleteItem(${item.id})" class="text-red-500 hover:bg-red-50 p-1 rounded">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `;
+        });
+    }
+
+    function deleteItem(id) {
+        if(confirm('আপনি কি নিশ্চিত এটি ডিলিট করবেন?')) {
+            appData = appData.filter(item => item.id !== id);
+            saveData();
+        }
+    }
+
+    function clearAllData() {
+        if(confirm('সব ডাটা মুছে যাবে! আপনি কি নিশ্চিত?')) {
+            localStorage.removeItem('myGpBlogData');
+            location.reload();
+        }
+    }
+
+    // Initial Render
+    renderApp();
+
+</script>
+
+</body>
+</html>
